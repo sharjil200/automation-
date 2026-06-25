@@ -1,0 +1,71 @@
+pipeline {
+    agent { label 'lala-agent' }
+
+    stages {
+        stage('Update Package Index') {
+            steps {
+                sh 'sudo apt-get update -y'
+            }
+        }
+
+        stage('Install Apache') {
+            steps {
+                sh 'sudo apt-get install -y apache2'
+            }
+        }
+
+        stage('Deploy Custom Homepage') {
+            steps {
+                writeFile file: 'index.html', text: '''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wanter Solution Company</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            text-align: center;
+            margin-top: 100px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        p {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Wanter Solution Company</h1>
+    <p>Deployed automatically via Jenkins CI/CD on Apache Web Server</p>
+</body>
+</html>'''
+                sh 'sudo cp index.html /var/www/html/index.html'
+            }
+        }
+
+        stage('Start & Enable Apache') {
+            steps {
+                sh 'sudo systemctl enable apache2'
+                sh 'sudo systemctl restart apache2'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh 'sudo systemctl status apache2 --no-pager'
+                sh 'curl -I http://localhost'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Apache installed and Wanter Solution Company homepage deployed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the console output for details.'
+        }
+    }
+}
