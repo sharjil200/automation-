@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'proteus-site'
         CONTAINER_NAME = 'proteus'
-        HOST_PORT = '80'
+        HOST_PORT = '8083'
     }
 
     stages {
