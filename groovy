@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'lala-agent'
+        label 'mobile-agent'
     }
 
     environment {
